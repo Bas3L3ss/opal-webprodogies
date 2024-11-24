@@ -8,6 +8,8 @@ import { useQueryData } from "@/hooks/useQueryData";
 import { getWorkspaceFolders } from "@/actions/workspace";
 import { useMutationDataState } from "@/hooks/use-mutation-data";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useDispatch } from "react-redux";
+import { FOLDERS } from "@/redux/slices/foldersSlice";
 
 type Props = { workspaceId: string };
 
@@ -28,12 +30,16 @@ export type FoldersProps = {
 };
 
 const Folders = ({ workspaceId }: Props) => {
-  const { data } = useQueryData(["workspace-folders"], () =>
+  const dispatch = useDispatch();
+
+  const { data, isFetched } = useQueryData(["workspace-folders"], () =>
     getWorkspaceFolders(workspaceId)
   );
   const { status, data: folders } = data as FoldersProps;
 
   const { latestVariables } = useMutationDataState(["create-folder"]);
+
+  if (isFetched && folders) dispatch(FOLDERS({ folders: folders.folders }));
 
   return (
     <div className="flex flex-col gap-4" suppressHydrationWarning>
@@ -77,11 +83,6 @@ const Folders = ({ workspaceId }: Props) => {
             </>
           )}
         </div>
-        {/* <Videos
-        workspaceId={workspaceId}
-        folderId={workspaceId}
-        videosKey="user-videos"
-      /> */}
       </ScrollArea>
     </div>
   );

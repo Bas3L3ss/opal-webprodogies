@@ -168,161 +168,173 @@ export const searchUsers = async (query: string) => {
   }
 };
 
-// export const getPaymentInfo = async () => {
-//   try {
-//     const user = await currentUser();
-//     if (!user) return { status: 404 };
+export const getPaymentInfo = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
 
-//     const payment = await client.user.findUnique({
-//       where: {
-//         clerkid: user.id,
-//       },
-//       select: {
-//         subscription: {
-//           select: { plan: true },
-//         },
-//       },
-//     });
-//     if (payment) {
-//       return { status: 200, data: payment };
-//     }
-//   } catch (error) {
-//     return { status: 400 };
-//   }
-// };
+    const payment = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        subscription: {
+          select: { plan: true },
+        },
+      },
+    });
+    if (payment) {
+      return { status: 200, data: payment };
+    }
+  } catch (error) {
+    console.log(error);
 
-// export const enableFirstView = async (state: boolean) => {
-//   try {
-//     const user = await currentUser();
+    return { status: 400 };
+  }
+};
 
-//     if (!user) return { status: 404 };
+export const enableFirstView = async (state: boolean) => {
+  try {
+    const user = await currentUser();
 
-//     const view = await client.user.update({
-//       where: {
-//         clerkid: user.id,
-//       },
-//       data: {
-//         firstView: state,
-//       },
-//     });
+    if (!user) return { status: 404 };
 
-//     if (view) {
-//       return { status: 200, data: "Setting updated" };
-//     }
-//   } catch (error) {
-//     return { status: 400 };
-//   }
-// };
+    const view = await client.user.update({
+      where: {
+        clerkid: user.id,
+      },
+      data: {
+        firstView: state,
+      },
+    });
 
-// export const getFirstView = async () => {
-//   try {
-//     const user = await currentUser();
-//     if (!user) return { status: 404 };
-//     const userData = await client.user.findUnique({
-//       where: {
-//         clerkid: user.id,
-//       },
-//       select: {
-//         firstView: true,
-//       },
-//     });
-//     if (userData) {
-//       return { status: 200, data: userData.firstView };
-//     }
-//     return { status: 400, data: false };
-//   } catch (error) {
-//     return { status: 400 };
-//   }
-// };
+    if (view) {
+      return { status: 200, data: "Setting updated" };
+    }
+  } catch (error) {
+    console.log(error);
 
-// export const createCommentAndReply = async (
-//   userId: string,
-//   comment: string,
-//   videoId: string,
-//   commentId?: string | undefined
-// ) => {
-//   try {
-//     if (commentId) {
-//       const reply = await client.comment.update({
-//         where: {
-//           id: commentId,
-//         },
-//         data: {
-//           reply: {
-//             create: {
-//               comment,
-//               userId,
-//               videoId,
-//             },
-//           },
-//         },
-//       });
-//       if (reply) {
-//         return { status: 200, data: "Reply posted" };
-//       }
-//     }
+    return { status: 400 };
+  }
+};
 
-//     const newComment = await client.video.update({
-//       where: {
-//         id: videoId,
-//       },
-//       data: {
-//         Comment: {
-//           create: {
-//             comment,
-//             userId,
-//           },
-//         },
-//       },
-//     });
-//     if (newComment) return { status: 200, data: "New comment added" };
-//   } catch (error) {
-//     return { status: 400 };
-//   }
-// };
+export const getFirstView = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const userData = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        firstView: true,
+      },
+    });
+    if (userData) {
+      return { status: 200, data: userData.firstView };
+    }
+    return { status: 400, data: false };
+  } catch (error) {
+    console.log(error);
 
-// export const getUserProfile = async () => {
-//   try {
-//     const user = await currentUser();
-//     if (!user) return { status: 404 };
-//     const profileIdAndImage = await client.user.findUnique({
-//       where: {
-//         clerkid: user.id,
-//       },
-//       select: {
-//         image: true,
-//         id: true,
-//       },
-//     });
+    return { status: 400 };
+  }
+};
 
-//     if (profileIdAndImage) return { status: 200, data: profileIdAndImage };
-//   } catch (error) {
-//     return { status: 400 };
-//   }
-// };
+export const createCommentAndReply = async (
+  userId: string,
+  comment: string,
+  videoId: string,
+  commentId?: string | undefined
+) => {
+  try {
+    if (commentId) {
+      const reply = await client.comment.update({
+        where: {
+          id: commentId,
+        },
+        data: {
+          reply: {
+            create: {
+              comment,
+              userId,
+              videoId,
+            },
+          },
+        },
+      });
+      if (reply) {
+        return { status: 200, data: "Reply posted" };
+      }
+    }
 
-// export const getVideoComments = async (Id: string) => {
-//   try {
-//     const comments = await client.comment.findMany({
-//       where: {
-//         OR: [{ videoId: Id }, { commentId: Id }],
-//         commentId: null,
-//       },
-//       include: {
-//         reply: {
-//           include: {
-//             User: true,
-//           },
-//         },
-//         User: true,
-//       },
-//     });
+    const newComment = await client.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        Comment: {
+          create: {
+            comment,
+            userId,
+          },
+        },
+      },
+    });
+    if (newComment) return { status: 200, data: "New comment added" };
+  } catch (error) {
+    console.log(error);
 
-//     return { status: 200, data: comments };
-//   } catch (error) {
-//     return { status: 400 };
-//   }
-// };
+    return { status: 400 };
+  }
+};
+
+export const getUserProfile = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const profileIdAndImage = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        image: true,
+        id: true,
+      },
+    });
+
+    if (profileIdAndImage) return { status: 200, data: profileIdAndImage };
+  } catch (error) {
+    console.log(error);
+
+    return { status: 400 };
+  }
+};
+
+export const getVideoComments = async (Id: string) => {
+  try {
+    const comments = await client.comment.findMany({
+      where: {
+        OR: [{ videoId: Id }, { commentId: Id }],
+        commentId: null,
+      },
+      include: {
+        reply: {
+          include: {
+            User: true,
+          },
+        },
+        User: true,
+      },
+    });
+
+    return { status: 200, data: comments };
+  } catch (error) {
+    console.log(error);
+
+    return { status: 400 };
+  }
+};
 
 // export const inviteMembers = async (
 //   workspaceId: string,

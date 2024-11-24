@@ -1,6 +1,7 @@
 import { getNotifications, onAuthenticateUser } from "@/actions/user";
 import {
   getAllUserVideos,
+  getAllWorkspaceVideos,
   getWorkspaceFolders,
   getWorkSpaces,
   verifyAccessToWorkspace,
@@ -49,6 +50,10 @@ const DashboardLayout = async ({ children, params }: DashboardLayoutProps) => {
   await query.prefetchQuery({
     queryKey: ["user-workspaces"],
     queryFn: () => getWorkSpaces(),
+  });
+  await query.prefetchQuery({
+    queryKey: ["workspace-videos"],
+    queryFn: () => getAllWorkspaceVideos(params.workspaceId),
   });
   await query.prefetchQuery({
     queryKey: ["user-notifications"],

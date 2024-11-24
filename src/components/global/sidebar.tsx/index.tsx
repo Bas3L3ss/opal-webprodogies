@@ -31,6 +31,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import InfoBar from "../info-bar";
+import { useDispatch } from "react-redux";
+import { WORKSPACES } from "@/redux/slices/workspaceSlice";
 
 type SidebarProps = {
   activeWorkspaceId: string;
@@ -39,10 +41,11 @@ type SidebarProps = {
 const Sidebar = ({ activeWorkspaceId }: SidebarProps) => {
   const router = useRouter();
   const pathName = usePathname();
+  const dispatch = useDispatch();
 
   const menuItems = MENU_ITEMS(activeWorkspaceId);
 
-  const { data } = useQueryData(["user-workspaces"], getWorkSpaces);
+  const { data, isFetched } = useQueryData(["user-workspaces"], getWorkSpaces);
 
   const { data: notifications } = useQueryData(
     ["user-notifications"],
@@ -50,6 +53,11 @@ const Sidebar = ({ activeWorkspaceId }: SidebarProps) => {
   );
 
   const { data: workspace } = data as WorkspaceProps;
+
+  if (isFetched && workspace) {
+    dispatch(WORKSPACES({ workspaces: workspace.workspace }));
+  }
+
   const { data: count } = notifications as NotificationProps;
 
   const currentWorkspace = workspace.workspace.find(
@@ -155,7 +163,7 @@ const Sidebar = ({ activeWorkspaceId }: SidebarProps) => {
           </div>
         )}
         <nav className="w-full">
-          <ul className="h-[150px] overflow-auto overflow-x-hidden fade-layer">
+          <ScrollArea className="h-[150px] overflow-auto overflow-x-hidden fade-layer">
             {workspace.workspace.length > 0 &&
               workspace.workspace.map(
                 (item) =>
@@ -189,7 +197,7 @@ const Sidebar = ({ activeWorkspaceId }: SidebarProps) => {
                   }
                 />
               ))}
-          </ul>
+          </ScrollArea>
         </nav>
         <Separator className="w-4/5" />
         {workspace.subscription?.plan === "FREE" && (

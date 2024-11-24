@@ -10,7 +10,7 @@ type Props = {
 
 const SidebarItem = ({ href, icon, selected, title, notifications }: Props) => {
   return (
-    <li className="cursor-pointer my-[5px]">
+    <div className="cursor-pointer my-[5px]">
       <Link
         href={href}
         className={cn(
@@ -37,7 +37,7 @@ const SidebarItem = ({ href, icon, selected, title, notifications }: Props) => {
           </p>
         ) : null}
       </Link>
-    </li>
+    </div>
   );
 };
 

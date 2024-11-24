@@ -37,24 +37,25 @@ export type FolderProps = {
   };
 };
 
-export type VideosProps = {
+export type WorkspaceVideosProps = {
   status: number;
   data: {
     videos: {
-      User: {
-        firstname: string | null;
-        lastname: string | null;
-        image: string | null;
-      } | null;
       id: string;
+      title: string | null;
+      source: string;
+      createdAt: Date;
       processing: boolean;
       Folder: {
         id: string;
         name: string;
       } | null;
-      createdAt: Date;
-      title: string | null;
-      source: string;
+      User: {
+        id: string;
+        firstname: string | null;
+        lastname: string | null;
+        image: string | null;
+      } | null;
     }[];
   };
 };
@@ -81,6 +82,27 @@ export type VideoProps = {
     summery: string;
   };
   author: boolean;
+};
+export type VideosProps = {
+  status: number;
+  data: {
+    videos: {
+      User: {
+        firstname: string | null;
+        lastname: string | null;
+        image: string | null;
+      } | null;
+      id: string;
+      processing: boolean;
+      Folder: {
+        id: string;
+        name: string;
+      } | null;
+      createdAt: Date;
+      title: string | null;
+      source: string;
+    }[];
+  };
 };
 
 export type CommentRepliesProps = {

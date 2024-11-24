@@ -110,6 +110,57 @@ export const getAllUserVideos = async (folderId: string) => {
   }
 };
 
+export const getAllWorkspaceVideos = async (workspaceId: string) => {
+  console.log(workspaceId);
+
+  try {
+    const user = await currentUser();
+    if (!user) {
+      return { status: 404 };
+    }
+
+    const videos = await client.video.findMany({
+      where: {
+        workSpaceId: workspaceId,
+      },
+      select: {
+        id: true,
+        title: true,
+        source: true,
+        createdAt: true,
+        processing: true,
+        Folder: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        User: {
+          select: {
+            id: true,
+            firstname: true,
+            lastname: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+      take: 10,
+    });
+
+    if (videos && videos.length > 0) {
+      return { status: 200, data: { videos } };
+    }
+
+    return { status: 404, data: { videos: [] } };
+  } catch (error) {
+    console.log(error);
+    return { status: 403, data: { videos: [] } };
+  }
+};
+
 export const getWorkSpaces = async () => {
   try {
     const user = await currentUser();
@@ -249,6 +300,7 @@ export const getFolderInfo = async (folderId: string) => {
       },
       select: {
         name: true,
+        id: true,
         _count: {
           select: {
             videos: true,
@@ -294,5 +346,52 @@ export const moveVideoLocation = async (
   } catch (error) {
     console.log(error);
     return { status: 500, data: "Oops! something went wrong" };
+  }
+};
+export const getPreviewVideo = async (videoId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const video = await client.video.findUnique({
+      where: {
+        id: videoId,
+      },
+      select: {
+        title: true,
+        createdAt: true,
+        source: true,
+        description: true,
+        processing: true,
+        views: true,
+        summery: true,
+        User: {
+          select: {
+            firstname: true,
+            lastname: true,
+            image: true,
+            clerkid: true,
+            trial: true,
+            subscription: {
+              select: {
+                plan: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (video) {
+      return {
+        status: 200,
+        data: video,
+        author: user.id === video.User?.clerkid ? true : false,
+      };
+    }
+
+    return { status: 404 };
+  } catch (error) {
+    console.log(error);
+
+    return { status: 400 };
   }
 };
