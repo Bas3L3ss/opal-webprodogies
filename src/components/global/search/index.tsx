@@ -2,12 +2,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useMutationData } from "@/hooks/useMutationData";
 
 import React from "react";
 import Loader from "../loader";
 import { User } from "lucide-react";
 import { useSearch } from "@/hooks/use-search";
+import { useMutationData } from "@/hooks/use-mutation-data";
+import { inviteMembers } from "@/actions/user";
 type Props = {
   workspaceId: string;
 };
@@ -18,11 +19,11 @@ const Search = ({ workspaceId }: Props) => {
     "USERS"
   );
 
-  // const { mutate, isPending } = useMutationData(
-  //   ["invite-member"],
-  //   (data: { recieverId: string; email: string }) =>
-  //     inviteMembers(workspaceId, data.recieverId, data.email)
-  // )();
+  const { mutate, isPending } = useMutationData(
+    ["invite-member"],
+    (data: { recieverId: string; email: string }) =>
+      inviteMembers(workspaceId, data.recieverId, data.email)
+  );
   return (
     <div className="flex flex-col gap-y-5">
       <Input
@@ -62,13 +63,14 @@ const Search = ({ workspaceId }: Props) => {
               </div>
               <div className="flex-1 flex justify-end items-center">
                 <Button
-                  // onClick={() =>
-                  //   // mutate({ recieverId: user.id, email: user.email })
-                  // }
+                  onClick={() =>
+                    mutate({ recieverId: user.id, email: user.email })
+                  }
+                  disabled={isPending}
                   variant={"default"}
                   className="w-5/12 font-bold"
                 >
-                  <Loader state={true} color="#000">
+                  <Loader state={isPending} color="#000">
                     Invite
                   </Loader>
                 </Button>

@@ -6,13 +6,15 @@ type Props = {
   state: boolean;
   className?: string;
   color?: string;
+  text?: string;
   children?: React.ReactNode;
 };
 
-const Loader = ({ state, className, color, children }: Props) => {
+const Loader = ({ state, className, color, children, text }: Props) => {
   return state ? (
-    <div className={cn(className)}>
+    <div className={cn("flex items-center", className)}>
       <Spinner color={color} />
+      <span className="ml-2 text-sm text-muted-foreground">{text}</span>
     </div>
   ) : (
     <>{children}</>

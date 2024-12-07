@@ -61,15 +61,17 @@ const DashboardLayout = async ({ children, params }: DashboardLayoutProps) => {
   });
 
   return (
-    <HydrationBoundary state={dehydrate(query)}>
-      <div className="flex h-screen w-screen">
-        <Sidebar activeWorkspaceId={params.workspaceId} />
-        <div className="w-full pt-28 p-6 overflow-y-scroll overflow-x-hidden">
-          <GlobalHeader workspace={hasAccess.data.workspace} />
-          <div className="mt-4">{children}</div>
+    <>
+      <HydrationBoundary state={dehydrate(query)}>
+        <div className="flex h-screen w-screen">
+          <Sidebar activeWorkspaceId={params.workspaceId} />
+          <div className="w-full pt-28 p-6 overflow-y-scroll overflow-x-hidden">
+            <GlobalHeader workspace={hasAccess.data.workspace} />
+            <div className="mt-4">{children}</div>
+          </div>
         </div>
-      </div>
-    </HydrationBoundary>
+      </HydrationBoundary>
+    </>
   );
 };
 

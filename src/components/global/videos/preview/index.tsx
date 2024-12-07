@@ -1,6 +1,6 @@
 "use client";
 
-import { getPreviewVideo } from "@/actions/workspace";
+import { getPreviewVideo, sendEmailForFirstView } from "@/actions/workspace";
 import { useQueryData } from "@/hooks/useQueryData";
 import { VideoProps } from "@/types/index.type";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,8 @@ import { truncateString } from "@/lib/utils";
 import TabMenu from "../../tabs";
 import AiTools from "../../ai-tools";
 import VideoTranscript from "../../video-transcript";
+import Activities from "../../activities";
+import { useEffect } from "react";
 
 type Props = {
   videoId: string;
@@ -22,12 +24,23 @@ const VideoPreview = ({ videoId }: Props) => {
   const { data } = useQueryData(["preview-video"], () =>
     getPreviewVideo(videoId)
   );
+
   const { data: video, status, author } = data as VideoProps;
   if (status !== 200) router.push("/");
 
   const daysAgo = Math.floor(
     (new Date().getTime() - video.createdAt.getTime()) / (24 * 60 * 60 * 1000)
   );
+  useEffect(() => {
+    const notifyFirstView = async () => await sendEmailForFirstView(videoId);
+
+    if (video.views === 0) {
+      notifyFirstView();
+    }
+    return () => {
+      notifyFirstView();
+    };
+  }, [video.views, videoId]);
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 lg:py-10 overflow-y-auto gap-5">
@@ -108,12 +121,11 @@ const VideoPreview = ({ videoId }: Props) => {
               plan={video.User?.subscription?.plan ?? "FREE"}
             />
             <VideoTranscript transcript={video.summery!} />
-            {/*
+
             <Activities
               author={video.User?.firstname as string}
               videoId={videoId}
             />
-            */}
           </TabMenu>
         </div>
       </div>

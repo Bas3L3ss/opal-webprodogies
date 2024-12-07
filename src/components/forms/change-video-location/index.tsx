@@ -72,7 +72,7 @@ const ChangeVideoLocation = ({
                   Loading...
                 </span>
               )}
-              {folder?.name || "This video has no folder"}
+              {!isFetching && (folder?.name || "This video has no folder")}
             </p>
           </div>
         </CardContent>
@@ -141,9 +141,18 @@ const ChangeVideoLocation = ({
                   </select>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  This workspace has no folders
-                </p>
+                <>
+                  <div className="select-container">
+                    <select
+                      defaultValue={""}
+                      {...register("folder_id")}
+                      className="hidden w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    ></select>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    This workspace has no folders
+                  </p>
+                </>
               )}
             </div>
           )}

@@ -32,7 +32,7 @@ export const useMoveVideos = (videoId: string, currentWorkspace: string) => {
   const { errors, onFormSubmit, watch, register } = useZodForm(
     moveVideoSchema,
     mutate,
-    { folder_id: null, workspace_id: currentWorkspace }
+    { folder_id: "", workspace_id: currentWorkspace }
   );
 
   const fetchFolders = async (workspace: string) => {
